@@ -1,0 +1,43 @@
+const int rows[3] = {A0, A1, A2}; // Row pins
+const int cols[3] = {A3, A4, A5}; // Column pins
+const int leds[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9}; // LED pins
+
+int buttonState[3][3] = {0}; // Array to store button states
+
+void setup() {
+  // Initialize row and column pins
+  for (int i = 0; i < 3; i++) {
+    pinMode(rows[i], OUTPUT);
+    pinMode(cols[i], INPUT_PULLUP); // Enable internal pull-up resistors for column pins
+  }
+  
+  // Initialize LED pins
+  for (int i = 0; i < 9; i++) {
+    pinMode(leds[i], OUTPUT);
+    digitalWrite(leds[i], LOW); // Turn off all LEDs initially
+  }
+}
+
+void loop() {
+  for (int row = 0; row < 3; row++) {
+    // Set the current row to LOW
+    digitalWrite(rows[row], LOW);
+    
+    // Read each column in the current row
+    for (int col = 0; col < 3; col++) {
+      if (digitalRead(cols[col]) == LOW) { // Button pressed (LOW due to pull-up resistor)
+        buttonState[row][col] = 1;
+      } else {
+        buttonState[row][col] = 0;
+      }
+      
+      // Update corresponding LED state
+      digitalWrite(leds[row * 3 + col], buttonState[row][col] ? HIGH : LOW);
+    }
+    
+    // Set the current row back to HIGH
+    digitalWrite(rows[row], HIGH);
+  }
+  
+  delay(50); // Small delay to debounce the buttons
+}
